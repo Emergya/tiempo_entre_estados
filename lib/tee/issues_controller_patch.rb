@@ -11,6 +11,7 @@ module TEE
 	      alias_method_chain :show, :total_time
 	      skip_before_filter :authorize, :only => [:stats_total_time]
 	      before_filter :set_start_statuses, :set_get_intervals, only: [:show, :stats_total_time]
+	      menu_item :issues, :only => [:stats_total_time]
 	    end
 	  end
 
@@ -27,7 +28,7 @@ module TEE
 
 			     # Calcula el tiempo del ultimo intervalo
 			 	 if interval == @intervals.last
-			 	 	@last_interval_time = TeeTimetable.get_total_time(@issue.project_id, role, interval[:start], interval[:end]) if statuses.map{|s| s[:id]}.include?(interval[:status_id])
+			 	 	@last_interval_time += TeeTimetable.get_total_time(@issue.project_id, role, interval[:start], interval[:end]) if statuses.map{|s| s[:id]}.include?(interval[:status_id])
 			 	 end
 			 end
 			end
@@ -46,13 +47,14 @@ module TEE
 	   		@start_statuses.each do |role, statuses|
 			 @intervals.each do |interval|
 			   if statuses.map{|s| s[:id]}.include?(interval[:status_id])
-			     time = TeeTimetable.get_total_time(@issue.project_id, role, interval[:start], interval[:end])
-			     if time != 0
-				     role_selected = Role.find role
-				     time_hours = Issue.get_hours(time) 
-				     @stats_time << {:role => role_selected.name, :status => statuses[0][:name], :start => interval[:start], :end => interval[:end], :time => time_hours} if time_hours > 0.0
-				     @time_by_roles[role_selected.name] ? @time_by_roles[role_selected.name] += time_hours : @time_by_roles[role_selected.name] = time_hours
-			 	 end
+			    time = TeeTimetable.get_total_time(@issue.project_id, role, interval[:start], interval[:end])
+			    if time != 0
+				    role_selected = Role.find role
+				    time_hours = Issue.get_hours(time)
+				    	@stats_time << {:role => role_selected.name, :status => IssueStatus.find(interval[:status_id])[:name], :start => interval[:start], :end => interval[:end], :time => time_hours} if time_hours > 0.0
+
+				    @time_by_roles[role_selected.name] ? @time_by_roles[role_selected.name] += time_hours : @time_by_roles[role_selected.name] = time_hours
+			 	end
 			   end
 			 end
 			end    
@@ -72,6 +74,7 @@ module TEE
 	   			close_statuses = role_statuses[:pause] + role_statuses[:close]
 	   			@start_statuses[role.id] = all_statuses.reject{|s| close_statuses.include?(s)}
 	   		end	
+	 
 	   end
 
 	   def set_get_intervals

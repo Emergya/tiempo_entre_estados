@@ -5,7 +5,7 @@
    <thead>
     <tr>
        <th><%= l(:text_role) %></th>
-       <th><%= l(:"status.start_status") %></th>
+       <!--<th><%# l(:"status.start_status") %></th> -->
        <th><%= l(:"status.pause_status") %></th>
        <th><%= l(:"status.end_status") %></th>
        <th><%= l(:text_permissions) %></th>
@@ -15,7 +15,7 @@
       <% @result.each do |role_id, data| %>
         <tr class="<%= cycle("odd", "even") %>">
          <td><%= data[:name] %></td>
-  	     <td><%= data[:statuses][:start].collect{|d| d[:name]}.join(', ') %></td>
+  	     <!--<td><%# data[:statuses][:start].collect{|d| d[:name]}.join(', ') %></td> -->
          <td><%= data[:statuses][:pause].collect{|d| d[:name]}.join(', ') %></td>
          <td><%= data[:statuses][:close].collect{|d| d[:name]}.join(', ') %></td>
          <td><%= link_to '<span class="icon icon-edit">'.html_safe+l(:text_edit), :controller => :tee_prs, :action => :index, :role_id => role_id, :project_id => @project %></td>
