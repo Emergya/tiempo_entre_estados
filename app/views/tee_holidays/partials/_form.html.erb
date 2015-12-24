@@ -24,9 +24,8 @@
 
 	
 	<%= f.submit l(:text_save), style: "float: left;" %>
-	<%= button_to l(:text_back), project_tee_home_path(:project_id => @project), style: "margin-left: 5px;" %>
-
-
 <% end %>
+
+	<%= button_to l(:text_back), project_tee_home_path(:project_id => @project), style: "margin-left: 5px;", :method => :get %>
 <div style="clear: both;"></div>
 </div>

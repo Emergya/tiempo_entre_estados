@@ -5,20 +5,20 @@
 <table>
 	<tbody>
 		<tr>
-
+			<!--
 			<td>
 				<table class="query-columns">
 					<tbody>
 						<tr>
 							<td style:"padding-left:0">
-								<label for="available_columns"><%= l(:"status.start_statuses") %></label><br>
-								<%= select_tag 'start', options_for_select(@statuses, @start), {:multiple => true, :size => 10, style: "width:150px; margin-right: 20px;"} %>
+								<label for="available_columns"><%# l(:"status.start_statuses") %></label><br>
+								<%# select_tag 'start', options_for_select(@statuses, @start), {:multiple => true, :size => 10, style: "width:150px; margin-right: 20px;"} %>
 							</td>
 						</tr>
 					</tbody>
 				</table>
 			</td>
-
+			-->
 			<td>
 				<table class="query-columns">
 					<tbody>
@@ -56,4 +56,4 @@
 <%= f.submit "Guardar", style: "float: left;" %>
 <% end %>
 
-<%= button_to "Volver", project_tee_home_path(:project_id => @project), style: "margin-left: 5px;" %>
+<%= button_to "Volver", project_tee_home_path(:project_id => @project), style: "margin-left: 5px;", :method => :get %>

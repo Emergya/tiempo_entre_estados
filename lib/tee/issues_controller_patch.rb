@@ -60,9 +60,18 @@ module TEE
 	   		render 'stats_total_time.html.erb'
 	   end
 
+	   # Recoge los estados con los que debe de contar el tiempo
+	   # Que son todos los estados menos los estados de pausa y los estados de fin
 	   def set_start_statuses
 	   		@issue = Issue.find params[:issue_id] if params[:issue_id]
-	   		@start_statuses = Role.all.map{|r| {r.id => r.roles_statuses(@issue.project_id)[:start]}}.inject(:merge)
+	   		@start_statuses = {}
+	   		all_statuses = IssueStatus.all.map{|s| { :id => s.id, :name => s.name}}
+
+	   		Role.all.each do |role|
+	   			role_statuses = role.roles_statuses(@issue.project_id)
+	   			close_statuses = role_statuses[:pause] + role_statuses[:close]
+	   			@start_statuses[role.id] = all_statuses.reject{|s| close_statuses.include?(s)}
+	   		end	
 	   end
 
 	   def set_get_intervals
