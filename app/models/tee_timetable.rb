@@ -13,6 +13,8 @@ class TeeTimetable < ActiveRecord::Base
   validate :check_roles
   validate :check_timetable_default_by_role
 
+  before_save :set_journals_datetime
+
   # Genera mensaje de error
   def get_error_message
     error_msg = ""
@@ -43,17 +45,16 @@ class TeeTimetable < ActiveRecord::Base
   	  penultimate_day = (etime - 1.day).to_date
 
       # Calculamos el tiempo las semanas completas que hay en el intervalo
-  	  weeks = ([(penultimate_day - second_day).to_i, 0].max / 7).floor
+  	  weeks = ([(penultimate_day - second_day).to_i + 1, 0].max / 7).floor
   	  time += weeks * week_total_time
-
       # Para el resto de días, calculamos por cada día
   	  (stime.to_date..(etime - (weeks * 7).days).to_date).each do |date|
   	    case date
 	  	  when stime.to_date
 	  		time += journal(date).day_time(stime)
-	  	  when (etime - weeks.days).to_date
+	  	  when (etime - (7 * weeks).days).to_date
 	  		time += journal(date).day_time(nil, etime)
-	  	  else
+        else
 	  		time += journal(date).day_time
 	  	end
 	  end
@@ -202,4 +203,10 @@ class TeeTimetable < ActiveRecord::Base
       end
     end
 
+    def set_journals_datetime
+      self.journals.each do |journal|
+         journal.start_time = journal.start_time.to_datetime.change(:offset => Time.now.in_time_zone(User.current.time_zone).strftime("%z")) if journal.start_time.present?
+         journal.end_time = journal.end_time.to_datetime.change(:offset => Time.now.in_time_zone(User.current.time_zone).strftime("%z")) if journal.end_time.present?
+       end
+    end
 end
