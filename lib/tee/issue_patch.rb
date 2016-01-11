@@ -25,7 +25,9 @@ module TEE
       def get_intervals
         result = []
         journals = JournalDetail.joins(:journal).select("journal_details.old_value, journal_details.value, journals.created_on AS end").where('journals.journalized_id = ? AND prop_key = ?', self.id, 'status_id')
-        start = self.created_on
+
+        start = Issue.select('created_on AS start').find(self.id).start.to_datetime
+
         if journals.present?
           journals.each do |journal|
             result << {:status_id => journal.old_value.to_i, :start => start, :end => journal.end.to_datetime}
