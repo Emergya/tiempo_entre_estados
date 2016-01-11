@@ -24,6 +24,7 @@ class TeeTimetablesController < ApplicationController
   	end
 
     @timetable.roles = Role.where("id in (?)", params["roles"])
+
     if @timetable.save
       flash[:notice] = l(:"timetable.timetable_notice_create")
   	  redirect_to project_tee_home_path(:project_id => @project)
@@ -35,13 +36,6 @@ class TeeTimetablesController < ApplicationController
 
   def edit
     @journals = @timetable.journals
-
-    @journals.each do |journal|
-      if journal.workable == true
-        journal.start_time = journal.start_time + 1.hour
-        journal.end_time = journal.end_time + 1.hour
-      end
-    end
 
     @rolestimetable = []
     @timetable.roles.collect{|role| @rolestimetable << role[:id]}

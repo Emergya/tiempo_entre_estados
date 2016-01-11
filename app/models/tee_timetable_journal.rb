@@ -2,7 +2,6 @@ class TeeTimetableJournal < ActiveRecord::Base
   unloadable
 
   belongs_to :journals
-  before_save :one_hour_less
 
   # Tiempo trabajado en el día completo
   def day_total_time
@@ -29,7 +28,7 @@ class TeeTimetableJournal < ActiveRecord::Base
 
       # Si etime es nulo, toma el valor del fin de la jornada
       if etime.present?
-        etime = normalize_time(etime) 
+        etime = normalize_time(etime)
       else
         etime = jetime
       end
@@ -43,14 +42,7 @@ class TeeTimetableJournal < ActiveRecord::Base
   private
   # Dado que se está trabajando con horas y no días, establecemos los datetimes al día de hoy
   def normalize_time(time)
-  	time.change(:day => Date.today.day, :month => Date.today.month, :year => Date.today.year)
+  	time.to_datetime.change(:day => DateTime.current.day, :month => DateTime.current.month, :year => DateTime.current.year, :offset => 0)
   end
 
-  # Restamos una hora para que se guarde correctamente en la BBDD y pueda hacer los calculos de tiempo correctamente
-  def one_hour_less
-    if self.workable == true
-      self.start_time = start_time - 1.hour
-      self.end_time = end_time - 1.hour
-    end
-  end
 end
