@@ -1,4 +1,6 @@
+<% if @project.module_enabled?(:tiempo_entre_estados) %>
 <tr>
 	<th class="category">Tiempo en el estado actual:</th>
 	<td class="category"><%= @last_interval_time.round(1) %> <%= l(:"issue.hour")+"(s)" %></td>
 </tr>
+<% end %>

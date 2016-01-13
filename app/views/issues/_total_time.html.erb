@@ -1,4 +1,6 @@
+<% if @project.module_enabled?(:tiempo_entre_estados) %>
 <tr>
 	<th class="category"><%= l(:"issue.total_time") %>:</th>
 	<td class="category"><%= link_to @total_time.round(1).to_s+" "+l(:"issue.hour")+"(s)", :controller => :issues, :action => :stats_total_time, :issue_id => @issue.id, :project_id => @project %></td>
 </tr>
+<% end %>
