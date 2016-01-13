@@ -123,8 +123,7 @@ class TeeTimetable < ActiveRecord::Base
       holidays_days = holidays_days.flatten.sort
     end
 
-      while stime < etime 
-
+      while stime.to_datetime.change(:offset => 0) < etime.to_datetime.change(:offset => 0) 
         timetable = TeeTimetable.joins(:roles).where("project_id = ? AND roles.id = ? AND start_date <= ? AND end_date > ? AND tee_timetables.default = 0", project_id, role_id, etime, stime).order(:stime => :desc).first
         
         if timetable.present? and timetable.start_date <= stime

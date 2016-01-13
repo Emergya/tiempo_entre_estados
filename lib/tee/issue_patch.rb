@@ -26,12 +26,12 @@ module TEE
         result = []
         journals = JournalDetail.joins(:journal).select("journal_details.old_value, journal_details.value, journals.created_on AS end").where('journals.journalized_id = ? AND prop_key = ?', self.id, 'status_id')
 
-        start = Issue.select('created_on AS start').find(self.id).start.to_datetime
-
+        start = Issue.select('created_on AS start').find(self.id).start.to_s.to_datetime
+        
         if journals.present?
           journals.each do |journal|
-            result << {:status_id => journal.old_value.to_i, :start => start, :end => journal.end.to_datetime}
-            start = journal.end.to_datetime
+            result << {:status_id => journal.old_value.to_i, :start => start, :end => journal.end.to_s.to_datetime}
+            start = journal.end.to_s.to_datetime
           end
         end
           result << {:status_id => self.status_id, :start => start, :end => Time.now}
