@@ -12,6 +12,7 @@ class TeeTimetable < ActiveRecord::Base
   validate :check_name_uniq
   validate :check_roles
   validate :check_timetable_default_by_role
+  before_update :set_timetable_default
 
   # Genera mensaje de error
   def get_error_message
@@ -201,4 +202,11 @@ class TeeTimetable < ActiveRecord::Base
       end
     end
 
+    # En el caso de que el horario sea por defecto se le asigna el valor null a las fechas de inicio y de fin.
+    def set_timetable_default
+      if self.default == true
+        self.start_date = nil
+        self.end_date = nil
+      end
+    end
 end
