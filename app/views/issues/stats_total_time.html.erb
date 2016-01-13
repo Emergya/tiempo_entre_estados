@@ -5,7 +5,7 @@
 
 	<% if @stats_time.map{|s| s[:role]}.include?(role.name) %>
 		<h3><%= role.name.capitalize %></h3>
-		<div class="total-hours">Total: <span class="hours hours-int"><%=  @time_by_roles[role.name].round(1) %></span> hora(s)</div>
+		<div class="total-hours">Total: <span class="hours hours-int"><%=  @time_by_roles[role.name].round(1) %></span> hora(s) para CSMe</div>
 		<div class="autoscroll">
 		<table class="list">
 			<thead>
