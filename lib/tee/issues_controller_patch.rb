@@ -9,7 +9,7 @@ module TEE
 	    base.class_eval do
 	      unloadable  # Send unloadable so it will be reloaded in development
 	      alias_method_chain :show, :total_time
-	      before_filter :find_project, :only => [:stats_total_time]
+	      before_filter :find_project_by_project_id, :only => [:stats_total_time]
 	      before_filter :set_start_statuses, :set_get_intervals, only: [:show, :stats_total_time]
 	      skip_before_filter :authorize, :only => [:stats_total_time]
 	      menu_item :issues, :only => [:stats_total_time]
