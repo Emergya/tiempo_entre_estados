@@ -42,25 +42,28 @@ module TEE
 
 	   # Recoge toda la información para cada intervalo de una petición
 	   def stats_total_time
-	   		@stats_time = []
-	   		@time_by_roles = {}
+	   		if User.current.allowed_to?(:tee_view_time, @project)
+	   			@stats_time = []
+		   		@time_by_roles = {}
 
-	   		@start_statuses.each do |role, statuses|
-			 @intervals.each do |interval|
-			   if statuses.map{|s| s[:id]}.include?(interval[:status_id])
-			    time = TeeTimetable.get_total_time(@issue.project_id, role, interval[:start], interval[:end])
-			    if time != 0
-				    role_selected = Role.find role
-				    time_hours = Issue.get_hours(time)
-				    	@stats_time << {:role => role_selected.name, :status => IssueStatus.find(interval[:status_id])[:name], :start => interval[:start], :end => interval[:end], :time => time_hours} if time_hours > 0.0
+		   		@start_statuses.each do |role, statuses|
+				 	@intervals.each do |interval|
+				   	if statuses.map{|s| s[:id]}.include?(interval[:status_id])
+				    	time = TeeTimetable.get_total_time(@issue.project_id, role, interval[:start], interval[:end])
+				    	if time != 0
+					    	role_selected = Role.find role
+					    	time_hours = Issue.get_hours(time)
+					    		@stats_time << {:role => role_selected.name, :status => IssueStatus.find(interval[:status_id])[:name], :start => interval[:start], :end => interval[:end], :time => time_hours} if time_hours > 0.0
 
-				    @time_by_roles[role_selected.name] ? @time_by_roles[role_selected.name] += time_hours : @time_by_roles[role_selected.name] = time_hours
-			 	end
-			   end
-			 end
-			end    
-
-	   		render 'stats_total_time.html.erb'
+					    	@time_by_roles[role_selected.name] ? @time_by_roles[role_selected.name] += time_hours : @time_by_roles[role_selected.name] = time_hours
+				 			end
+				   	end
+				 	end
+				end    
+					render 'stats_total_time.html.erb'
+		   	else
+		   		deny_access
+		   	end
 	   end
 
 	   # Recoge los estados con los que debe de contar el tiempo
