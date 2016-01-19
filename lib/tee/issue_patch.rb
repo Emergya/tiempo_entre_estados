@@ -10,7 +10,7 @@ module TEE
       # Same as typing in the class
       base.class_eval do
         unloadable # Send unloadable so it will be reloaded in development
-
+        validates_presence_of :notes
       end
     end
 
