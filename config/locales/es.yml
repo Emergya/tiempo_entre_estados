@@ -3,6 +3,7 @@ es:
     permission_tee_edit_statuses: Configurar estados
     permission_tee_edit_timetables: Configurar horarios
     permission_tee_edit_holidays: Configurar vacaciones
+    permission_tee_view_time: Ver detalle de tiempo total
 
     text_edit: "Editar"
     text_save: "Guardar"

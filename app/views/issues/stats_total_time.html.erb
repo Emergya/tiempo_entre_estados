@@ -2,8 +2,7 @@
 <h2>Tiempo dedicado en la petición</h2>
 
 <% Role.all.each do |role| %>
-
-	<% if @stats_time.map{|s| s[:role]}.include?(role.name) %>
+	<% if @stats_time.map{|s| s[:role]}.include?(role.name) && !role.tee_timetables.empty?%>
 		<h3><%= role.name.capitalize %></h3>
 		<div class="total-hours">Total: <span class="hours hours-int"><%=  @time_by_roles[role.name].round(1) %></span> hora(s)</div>
 		<div class="autoscroll">
