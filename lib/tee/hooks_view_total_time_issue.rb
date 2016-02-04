@@ -1,3 +1,3 @@
 class HooksViewTotalTimeIssue < Redmine::Hook::ViewListener
-  render_on :view_issues_show_details_bottom, :partial => "issues/total_time"
+  render_on :view_issues_show_custom_fields_top, :partial => "issues/total_time"
 end
