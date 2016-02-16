@@ -10,7 +10,6 @@ module TEE
       # Same as typing in the class
       base.class_eval do
         unloadable # Send unloadable so it will be reloaded in development
-        validates_presence_of :notes
       end
     end
 
@@ -18,7 +17,6 @@ module TEE
       def get_hours(seconds)
         return ((seconds.to_f/60.0)/60.0)
       end
-      
     end
 
     module InstanceMethods
@@ -36,7 +34,6 @@ module TEE
         end
           result << {:status_id => self.status_id, :start => start, :end => Time.now}
       end
-
     end
 
   end
