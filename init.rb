@@ -10,8 +10,8 @@ require 'tee/hooks_view_last_interval_time_issue'
 Redmine::Plugin.register :tiempo_entre_estados do
   name 'Tiempo Entre Estados plugin'
   author 'jresinas, mabalos'
-  description 'Plugin que permite controlar el tiempo entre distintos estados, y donde se muestra el tiempo invertido entre esos estados'
-  version '0.0.1'
+  description 'Plugin que permite controlar el tiempo entre distintos estados, y donde se muestra el tiempo invertido entre dichos estados'
+  version '0.2.0'
   author_url 'http://www.emergya.es'
 
   requires_redmine_plugin :adapter_deface, :version_or_higher => '0.0.1'

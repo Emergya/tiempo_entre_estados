@@ -1,36 +1,40 @@
 <div id="content">
-<h2>Tiempo dedicado en la petición</h2>
+<h2>Tiempo dedicado en '<%= @issue.subject %>'</h2>
 
 <% Role.all.each do |role| %>
 	<% if @stats_time.map{|s| s[:role]}.include?(role.name) && !role.tee_timetables.empty?%>
-		<h3><%= role.name.capitalize %></h3>
-		<div class="total-hours">Total: <span class="hours hours-int"><%=  @time_by_roles[role.name].round(1) %></span> hora(s)</div>
-		<div class="autoscroll">
-		<table class="list">
-			<thead>
-				<tr>
-					<th>Estado</th>
-					<th>Fecha Inicio</th>
-					<th>Fecha Fin</th>
-					<th>Horas</th>
-				</tr>
-			</thead>
-			<tbody>
-				<% @stats_time.each do |row| %>
-					<% if row[:role] == role.name %>
-						<tr class="time-entry <%= cycle("odd", "even") %> hascontextmenu" style="text-align: center">
-						<td class="buttons" style="text-align: center"><%= row[:status] %></td>
-						<td class="buttons" style="text-align: center"><%= row[:start].strftime("%d-%m-%Y %H:%M:%S") %></td>
-						<td class="buttons" style="text-align: center"><%= row[:end].strftime("%d-%m-%Y %H:%M:%S") %></td>
-						<td class="buttons" style="text-align: center"><%= row[:time].round(1) %></td>
-						</tr>
+		<fieldset>
+		<legend><h3><u><%= role.name.capitalize %></h3></u></legend>
+
+			<div class="total-hours">Total: <span class="hours hours-int"><%=  @time_by_roles[role.name].round(1) %></span> hora(s)</div>
+			<div class="autoscroll">
+			<table class="list">
+				<thead>
+					<tr>
+						<th>Estado</th>
+						<th>Fecha Inicio</th>
+						<th>Fecha Fin</th>
+						<th>Horas</th>
+					</tr>
+				</thead>
+				<tbody>
+					<% @stats_time.each do |row| %>
+						<% if row[:role] == role.name %>
+							<tr class="time-entry <%= cycle("odd", "even") %> hascontextmenu" style="text-align: center">
+							<td class="buttons" style="text-align: center"><%= row[:status] %></td>
+							<td class="buttons" style="text-align: center"><%= row[:start].strftime("%d-%m-%Y %H:%M:%S") %></td>
+							<td class="buttons" style="text-align: center"><%= row[:end].strftime("%d-%m-%Y %H:%M:%S") %></td>
+							<td class="buttons" style="text-align: center"><%= row[:time].round(1) %></td>
+							</tr>
+						<% end %>
 					<% end %>
-				<% end %>
-			</tbody>
-		</table>
-		</div>
+				</tbody>
+			</table>
+			</div>
+		</fieldset><br>
 	<% end %>
 
 <% end %>
 
+<%= button_to l(:text_back), issue_path(@issue), style: "margin-left: 5px;", :method => :get %>
 </div>

@@ -24,8 +24,8 @@
 					<tbody>
 						<tr>
 							<td style:"padding-left:0">
-								<label for="available_columns"><%= l(:"status.pause_statuses") %></label><br>
-								<%= select_tag 'pause', options_for_select(@statuses, @pause), {:multiple => true, :size => 10, style: "width:150px; margin-right: 20px;"} %>
+								<label for="available_columns"><%= l(:"status.pause_statuses") %>:</label><br>
+								<%= select_tag 'pause', options_for_select(@statuses, @pause), {:multiple => true, :size => 15, style: "width:250px; margin-right: 20px;"} %>
 							</td>
 						</tr>
 					</tbody>
@@ -37,8 +37,8 @@
 					<tbody>
 						<tr>
 							<td style:"padding-left:0">
-								<label for="available_columns"><%= l(:"status.end_statuses") %></label><br>
-								<%= select_tag 'close', options_for_select(@statuses, @close), {:multiple => true, :size => 10, style: "width:150px; margin-right: 20px;"} %>
+								<label for="available_columns"><%= l(:"status.end_statuses") %>:</label><br>
+								<%= select_tag 'close', options_for_select(@statuses, @close), {:multiple => true, :size => 15, style: "width:250px; margin-right: 20px;"} %>
 							</td>
 						</tr>
 					</tbody>

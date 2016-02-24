@@ -1,5 +1,6 @@
 
-  <h2><%= l(:"status.statuses") %></h2>
+  <fieldset>
+  <legend><h2><%= l(:"status.statuses") %></h2></legend>
 
   <table class="list">
    <thead>
@@ -23,12 +24,14 @@
       <% end %>
    </tbody>
   </table>
+</fieldset>
 
-<div class="content" style="margin-top:20px; float: left; width: 60%; margin-right:5%"> 
-  <div class="contextual">
+<div class="content" style="margin-top:20px; float: left; width: 60%; margin-right:2%"> 
+<fieldset>
+  <div class="contextual" style="margin-top: -10px; margin-bottom: 5px;">
     <%= link_to '<span class="icon icon-add">'.html_safe+l(:"timetable.new_timetable"), :controller => :tee_timetables, :action => :index, :project_id => @project %>
   </div>
-  <h2><%= l(:"timetable.timetables") %></h2> 
+  <legend><h2><%= l(:"timetable.timetables") %></h2></legend>
   <table class="list">
    <thead>
     <tr>
@@ -57,15 +60,17 @@
         <% end %>
    </tbody>
   </table>
+</fieldset>
 </div>
 
 <div class="content" style="margin-top:20px;"> 
-  <div class="contextual">
+<fieldset>
+  <div class="contextual" style="margin-top: -10px;">
     <%= link_to '<span class="icon icon-add">'.html_safe+"Nuevo calendario", project_tee_holidays_path(:project_id => @project) %>
   </div>
-  <h2><%= l(:"holiday.holidays") %></h2>
-
-  <table class="list" style="width: 35%">
+  <legend><h2><%= l(:"holiday.holidays") %></h2></legend>
+  <br>
+  <table class="list" style="margin-top: -4px;">
    <thead>
     <tr>
        <th><%= l(:text_name) %></th>
@@ -89,5 +94,5 @@
    <tbody>
   </table>
 
-
+</fieldset>
 </div>

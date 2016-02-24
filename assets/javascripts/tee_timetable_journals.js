@@ -1,16 +1,17 @@
 $(document).ready(function(){
-	$('.workable').on('click', function(){
-		if($(this).attr('checked')){
-			num = $(this).attr('id')
 
+	// Detectamos si el dia de la semana es laboral o no laboral.
+	$('.workable').on('click', function(){
+		num = $(this).attr('id');
+		if($(this).is(':checked')){
+			// Activamos los selects de las horas de esa semana.
 			for(var i=1; i<=5; i++){
 				$("#tee_timetable_journals_attributes_"+num+"_start_time_"+i.toString()+"i").attr("disabled",false);
 				$("#tee_timetable_journals_attributes_"+num+"_end_time_"+i.toString()+"i").attr("disabled",false);
 			}
 			
 		} else {
-			num = $(this).attr('id')
-
+			// Desactivamos los selects de las horas de esa semana
 			for(var i=1; i<=5; i++){
 				$("#tee_timetable_journals_attributes_"+num+"_start_time_"+i.toString()+"i").attr("disabled",true);
 				$("#tee_timetable_journals_attributes_"+num+"_end_time_"+i.toString()+"i").attr("disabled",true);
@@ -23,8 +24,10 @@ $(document).ready(function(){
 		}
 	});
 
+	// Si dicho horario es establecido como 'por defecto' se desactiva los inputs de 'Fecha de inicio' y 'Fecha de fin'.
+	// En caso contrario se activaran dichos inputs donde se introduciran los rangos de fechas para ese horario.
 	$('.timetable_default').on('click', function(){
-		if($(this).attr('checked')){
+		if($(this).is(':checked')){
 			disabledTimetableDates();
 			$("#tee_timetable_start_date").prop("value",null);
 			$("#tee_timetable_end_date").prop("value",null);
@@ -35,7 +38,7 @@ $(document).ready(function(){
 	});
 
 	$(".timetable.timetable_form").ready(function() {
-		if($('.timetable_default').attr('checked')){
+		if($('.timetable_default').is(':checked')){
 			disabledTimetableDates();
 		}
 
