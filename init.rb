@@ -3,9 +3,12 @@ require 'tee/project_patch'
 require 'tee/role_patch'
 require 'tee/application_helper_patch'
 require 'tee/issue_patch'
+require 'tee/issue_query_patch'
 require 'tee/issues_controller_patch'
 require 'tee/hooks_view_total_time_issue'
 require 'tee/hooks_view_last_interval_time_issue'
+require 'redmine/export/pdf_patch'
+require 'tee/queries_helper_patch'
 
 Redmine::Plugin.register :tiempo_entre_estados do
   name 'Tiempo Entre Estados plugin'

@@ -13,6 +13,7 @@ es:
     text_roles: "Perfiles"
     text_permissions: "Permisos"
     text_back: "Volver"
+    field_total_time: "Tiempo total"
 
     status:
         status: "Estado"
