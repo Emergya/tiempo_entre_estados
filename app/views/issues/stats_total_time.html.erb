@@ -5,26 +5,27 @@
 	<% if @stats_time.map{|s| s[:role]}.include?(role.name) && !role.tee_timetables.empty?%>
 		<fieldset>
 		<legend><h3><u><%= role.name.capitalize %></h3></u></legend>
-
-			<div class="total-hours">Total: <span class="hours hours-int"><%=  @time_by_roles[role.name].round(1) %></span> hora(s)</div>
+			<div class="total-hours">Total: <span class="hours hours-int"><%=  (@time_by_roles[role.name] * 10).floor / 10.0 %></span> hora(s)</div>
 			<div class="autoscroll">
 			<table class="list">
 				<thead>
 					<tr>
 						<th>Estado</th>
+						<th>Usuario</th>
 						<th>Fecha Inicio</th>
 						<th>Fecha Fin</th>
-						<th>Horas</th>
+						<th>Tiempo</th>
 					</tr>
 				</thead>
 				<tbody>
 					<% @stats_time.each do |row| %>
 						<% if row[:role] == role.name %>
-							<tr class="time-entry <%= cycle("odd", "even") %> hascontextmenu" style="text-align: center">
-							<td class="buttons" style="text-align: center"><%= row[:status] %></td>
-							<td class="buttons" style="text-align: center"><%= row[:start].strftime("%d-%m-%Y %H:%M:%S") %></td>
-							<td class="buttons" style="text-align: center"><%= row[:end].strftime("%d-%m-%Y %H:%M:%S") %></td>
-							<td class="buttons" style="text-align: center"><%= row[:time].round(1) %></td>
+							<tr class="time-entry <%= cycle("odd", "even") %>" style="text-align: center">
+							<td style="text-align: center"><%= row[:status] %></td>
+							<td style="text-align: center"><%= row[:user] %></td>
+							<td style="text-align: center"><%= row[:start].strftime("%d-%m-%Y %H:%M:%S") %></td>
+							<td style="text-align: center"><%= row[:end].strftime("%d-%m-%Y %H:%M:%S") %></td>
+							<td style="text-align: center"><%= row[:time] %></td>
 							</tr>
 						<% end %>
 					<% end %>

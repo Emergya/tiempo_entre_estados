@@ -55,7 +55,17 @@ module TEE
 					    if time != 0
 						    role_selected = Role.find role
 						    time_hours = Issue.get_hours(time)
-						    	@stats_time << {:role => role_selected.name, :status => IssueStatus.find(interval[:status_id])[:name], :start => interval[:start], :end => interval[:end], :time => time_hours} if time_hours > 0.0
+						    time_hh_mm_ss = Issue.get_seconds_to_hh_mm(time)
+
+						    if interval[:user_id].present?
+						    	user_name = User.find(interval[:user_id])
+						    	user = user_name.firstname + "-" + user_name.lastname
+						    else
+						    	user ="-"
+						    end
+			
+						    # @stats_time << {:role => role_selected.name, :status => IssueStatus.find(interval[:status_id])[:name], :user => user,:start => interval[:start], :end => interval[:end], :time => time_hours} if time_hours > 0.0
+						    @stats_time << {:role => role_selected.name, :status => IssueStatus.find(interval[:status_id])[:name], :user => user,:start => interval[:start], :end => interval[:end], :time => time_hh_mm_ss} if time_hours > 0.0
 
 						    @time_by_roles[role_selected.name] ? @time_by_roles[role_selected.name] += time_hours : @time_by_roles[role_selected.name] = time_hours
 					 	end	
@@ -68,7 +78,16 @@ module TEE
 	   			@intervals.each do |interval|
 		   			if statuses_pause.map{|s| s[:id]}.include?(interval[:status_id])
 				   		role_selected = Role.find role
-					    @stats_time << {:role => role_selected.name, :status => IssueStatus.find(interval[:status_id])[:name], :start => interval[:start], :end => interval[:end], :time => 0.0}
+
+				   		if interval[:user_id].present?
+					    	user_name = User.find(interval[:user_id])
+					    	user = user_name.firstname + "-" + user_name.lastname
+					    else
+					    	user ="-"
+					    end
+
+					    # @stats_time << {:role => role_selected.name, :status => IssueStatus.find(interval[:status_id])[:name], :start => interval[:start], :end => interval[:end], :time => 0.0}
+					    @stats_time << {:role => role_selected.name, :status => IssueStatus.find(interval[:status_id])[:name], :user => user, :start => interval[:start], :end => interval[:end], :time => "00 horas, 00 minutos"}
 		   			end
 	   			end
 	   		end

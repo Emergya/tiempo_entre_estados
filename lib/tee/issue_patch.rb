@@ -38,28 +38,38 @@ module TEE
            end
           end
 
-          return Issue.get_hours(@total_time).round(1).to_s
+          return ((Issue.get_hours(@total_time) * 10).floor / 10.0).to_s
       end
 
+      # Devuelve los segundos en horas. Ejemplo. '17.9'.
       def get_hours(seconds)
         return ((seconds.to_f/60.0)/60.0)
+      end
+
+      # Devuelve los segundos en horas y minutos. Ejemplo: '39 horas, 15 minutos'.
+      def get_seconds_to_hh_mm(seconds)
+        minutes = (seconds / 60) % 60
+        hours = seconds / (60 * 60)
+
+        return "#{hours.floor} horas, #{minutes.floor} minutos"
       end
     end
 
     module InstanceMethods
       def get_intervals
         result = []
-        journals = JournalDetail.joins(:journal).select("journal_details.old_value, journal_details.value, journals.created_on AS end").where('journals.journalized_id = ? AND prop_key = ?', self.id, 'status_id')
+        journals = JournalDetail.joins(:journal).select("journal_details.old_value, journal_details.value, journals.created_on AS end, journals.user_id").where('journals.journalized_id = ? AND prop_key = ?', self.id, 'status_id')
 
         start = Issue.select('created_on AS start').find(self.id).start.to_datetime
 
         if journals.present?
           journals.each do |journal|
-            result << {:status_id => journal.old_value.to_i, :start => start, :end => journal.end.to_datetime}
+            result << {:status_id => journal.old_value.to_i, :user_id => journal.user_id, :start => start, :end => journal.end.to_datetime}
             start = journal.end.to_datetime
           end
         end
-          result << {:status_id => self.status_id, :start => start, :end => Time.now}
+
+        result << {:status_id => self.status_id, :user_id => self.assigned_to_id, :start => start, :end => Time.now}
       end
     end
 
