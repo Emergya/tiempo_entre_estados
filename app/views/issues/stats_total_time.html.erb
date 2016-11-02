@@ -5,7 +5,7 @@
 	<% if @stats_time.map{|s| s[:role]}.include?(role.name) && !role.tee_timetables.empty?%>
 		<fieldset>
 		<legend><h3><u><%= role.name.capitalize %></h3></u></legend>
-			<div class="total-hours">Total: <span class="hours hours-int"><%=  (@time_by_roles[role.name] * 10).floor / 10.0 %></span> hora(s)</div>
+			<div class="total-hours">Total: <span class="hours hours-int"><%= ((@time_by_roles[role.name].to_f * 10).floor / 10.0) %></span> hora(s)</div>
 			<div class="autoscroll">
 			<table class="list">
 				<thead>
