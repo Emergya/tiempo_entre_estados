@@ -14,6 +14,7 @@ es:
     text_permissions: "Permisos"
     text_back: "Volver"
     field_total_time: "Tiempo total"
+    report_ans: "Informe ANS"
 
     status:
         status: "Estado"

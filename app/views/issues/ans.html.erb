@@ -1,0 +1,24 @@
+<% content_for :header_tags do %>
+  <%= stylesheet_link_tag "/report_ans.css", :plugin => 'tiempo_entre_estados', :media => "screen" %>
+<% end %>
+
+<h2>Informe ANS</h2>
+
+	<p class='p_report_ans'>Perfil: &nbsp; <%= select_tag "Perfil",
+	options_from_collection_for_select(Role.uniq, :id, :name),
+	:include_blank => true
+	%></p>
+
+	<p class='p_report_ans'>Usuario: &nbsp; <%= select_tag "Usuario",
+	options_from_collection_for_select(User.uniq, :id, :name),
+	:include_blank => true
+	%></p>
+
+	<p class='p_report_ans'>Estado: &nbsp; <%= select_tag "Estado",
+	options_from_collection_for_select(IssueStatus.uniq, :id, :name),
+	:include_blank => true
+	%></p>
+
+<% content_for :sidebar do %>
+    <%= render :partial => 'issues/sidebar' %>
+<% end %>

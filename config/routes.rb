@@ -15,6 +15,8 @@ RedmineApp::Application.routes.draw do
 			resources :tee_timetables_journals
 		end
 		resources :holidays, :controller => 'tee_holidays', :as => 'tee_holidays'
+
+		match '/issues/ans', :controller => 'issues', :action => 'report_ans', as: 'report_ans'
 	end
 
 
