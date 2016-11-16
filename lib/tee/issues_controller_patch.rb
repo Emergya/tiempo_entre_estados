@@ -43,8 +43,8 @@ module TEE
 
 	   	# Recoge toda la información para cada intervalo de una petición
 		def stats_total_time
-				if User.current.allowed_to?(:tee_view_time, @project)
-					@stats_time = []
+			if User.current.allowed_to?(:tee_view_time, @project)
+				@stats_time = []
 		   		@time_by_roles = {}
 
 				# Muestra el tiempo de los estados de inicio de cada perfil
@@ -73,29 +73,29 @@ module TEE
 				end
 			end    
 
-				# Muestra el tiempo de los estados de pausa del perfil (aparecerá 0.0 horas)
-				@pause_statuses.each do |role, statuses_pause|
-					@intervals.each do |interval|
-		   			if statuses_pause.map{|s| s[:id]}.include?(interval[:status_id])
-				   		role_selected = Role.find role
+			# Muestra el tiempo de los estados de pausa del perfil (aparecerá 0.0 horas)
+			@pause_statuses.each do |role, statuses_pause|
+				@intervals.each do |interval|
+	   			if statuses_pause.map{|s| s[:id]}.include?(interval[:status_id])
+			   		role_selected = Role.find role
 
-				   		if interval[:user_id].present?
-					    	user_name = User.find(interval[:user_id])
-					    	user = user_name.firstname + "-" + user_name.lastname
-					    else
-					    	user ="-"
-					    end
+			   		if interval[:user_id].present?
+				    	user_name = User.find(interval[:user_id])
+				    	user = user_name.firstname + "-" + user_name.lastname
+				    else
+				    	user ="-"
+				    end
 
-					    # @stats_time << {:role => role_selected.name, :status => IssueStatus.find(interval[:status_id])[:name], :start => interval[:start], :end => interval[:end], :time => 0.0}
-					    @stats_time << {:role => role_selected.name, :status => IssueStatus.find(interval[:status_id])[:name], :user => user, :start => interval[:start], :end => interval[:end], :time => "00 horas, 00 minutos"}
-		   			end
-					end
+				    # @stats_time << {:role => role_selected.name, :status => IssueStatus.find(interval[:status_id])[:name], :start => interval[:start], :end => interval[:end], :time => 0.0}
+				    @stats_time << {:role => role_selected.name, :status => IssueStatus.find(interval[:status_id])[:name], :user => user, :start => interval[:start], :end => interval[:end], :time => "00 horas, 00 minutos"}
+	   			end
 				end
+			end
 
-				# Ordenamos el array de hashes para que nos muestre los tiempos de estados ordenados por fecha
-				@stats_time.sort_by!{ |stats| stats[:start] }
+			# Ordenamos el array de hashes para que nos muestre los tiempos de estados ordenados por fecha
+			@stats_time.sort_by!{ |stats| stats[:start] }
 
-				render 'stats_total_time.html.erb'
+			render 'stats_total_time.html.erb'
 		 else
 		   deny_access
 		 end
@@ -130,9 +130,96 @@ module TEE
 			@intervals = @issue.get_intervals
 		end
 
+
+
+
+
 		def report_ans
-			render 'ans.html.erb'
+			retrieve_query
+		    sort_init(@query.sort_criteria.empty? ? [['id', 'desc']] : @query.sort_criteria)
+		    sort_update(@query.sortable_columns)
+
+		    cf_status_ans = Setting.plugin_tiempo_entre_estados[:tee_status_ans]
+		    include_ans = false
+		    if @query.filters.include?("cf_#{cf_status_ans}") && @query.filters.include?("assigned_to_role")
+			    # Eliminamos el filtro de Estado ANS para que no realice el filtro por este parametro.
+		    	include_ans_value = @query.filters["cf_#{cf_status_ans}"]
+		    	@query.filters.reject!{|x| x == "cf_#{cf_status_ans}"}
+		    	
+		    	# Filtro - Id de los estados
+		    	ans_name = include_ans_value[:values]
+		    	@status_ans_id = ans_name.map{|x| IssueStatus.find_by_name(x).id}
+
+		    	# Filtro - Roles
+		    	# @roles_id_filter = @query.filters["assigned_to_role"][:values]
+		    	# @roles_filter = []
+		    	# @roles_id_filter.each{|role_id| @roles_filter << Role.find(role_id)}
+
+		    	include_ans = true
+		    end
+
+		    @query.sort_criteria = sort_criteria.to_a
+
+		    if params[:set_filter].nil?
+		    	@query.filters = {"status_id"=>{:operator=>"o", :values=>[""]}, "assigned_to_role"=>{:operator=>"=", :values=>["6"]}, "start_date"=>{:operator=>"=", :values=>[Date.today.strftime("%Y-%m-%d")]}, "due_date"=>{:operator=>"=", :values=>[Date.today.strftime("%Y-%m-%d")]}}
+		    end
+
+		    if @query.valid?
+		      case params[:format]
+		      when 'csv', 'pdf'
+		        @limit = Setting.issues_export_limit.to_i
+		        if params[:columns] == 'all'
+		          @query.column_names = @query.available_inline_columns.map(&:name)
+		        end
+		      when 'atom'
+		        @limit = Setting.feeds_limit.to_i
+		      when 'xml', 'json'
+		        @offset, @limit = api_offset_and_limit
+		        @query.column_names = %w(author)
+		      else
+		        @limit = per_page_option
+		      end
+
+		      @issue_count = @query.issue_count
+		      @issue_pages = Redmine::Pagination::Paginator.new @issue_count, @limit, params['page']
+		      @offset ||= @issue_pages.offset
+		      @issues = @query.issues(:include => [:assigned_to, :tracker, :priority, :category, :fixed_version],
+		                              :order => sort_clause,
+		                              :offset => @offset,
+		                              :limit => @limit)
+
+		      @issue_count_by_group = @query.issue_count_by_group
+
+		      # Se añade el filtro de Estado ANS para que se muestre en la vista al recargar la vista.
+		      @query.filters["cf_#{cf_status_ans}"] = include_ans_value if include_ans
+
+		      respond_to do |format|
+		        format.html { render 'ans.html.erb', :layout => !request.xhr? }
+		        format.api  {
+		          Issue.load_visible_relations(@issues) if include_in_api_response?('relations')
+		        }
+		        format.atom { render_feed(@issues, :title => "#{@project || Setting.app_title}: #{l(:label_issue_plural)}") }
+		        format.csv  { send_data(query_to_csv(@issues, @query, params), :type => 'text/csv; header=present', :filename => 'issues.csv') }
+		        format.pdf  { send_data(issues_to_pdf(@issues, @project, @query), :type => 'application/pdf', :filename => 'issues.pdf') }
+		      end
+		    else
+		      respond_to do |format|
+		        format.html { render 'ans.html.erb', :layout => !request.xhr? }
+		        format.any(:atom, :csv, :pdf) { render(:nothing => true) }
+		        format.api { render_validation_errors(@query) }
+		      end
+		    end
+		  rescue ActiveRecord::RecordNotFound
+		    render_404
 		end
+
+
+
+
+
+
+
+
 
 	  end
 

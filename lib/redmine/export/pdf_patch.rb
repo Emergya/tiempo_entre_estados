@@ -28,6 +28,8 @@ module Redmine
 	          else
 	          	if column.name == :total_time
 	          		value = Issue.get_total_time(issue.id, @project)+" hora(s)"
+	          	elsif column.name == :total_time_last_status
+	          		value = Issue.get_total_time_last_status(issue.id, @project)+" hora(s)"
 	          	else
 		            value = issue.send(column.name)
 		            if column.name == :subject

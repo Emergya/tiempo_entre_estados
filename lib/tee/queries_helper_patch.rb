@@ -20,9 +20,12 @@ module TEE
 
 	  module InstanceMethods
 	   def csv_content_with_tee_total_time(column, issue)
-	    if column.name == :total_time
+	   	case column.name
+	   	when column.name == :total_time
 		    value = Issue.get_total_time(issue.id, @project)
-		  else
+		when column.name == :total_time_last_status
+		    value = Issue.get_total_time_last_status(issue.id, @project)
+		else
 		    value = column.value_object(issue)
 		    if value.is_a?(Array)
 		      value.collect {|v| csv_value(column, issue, v)}.compact.join(', ')

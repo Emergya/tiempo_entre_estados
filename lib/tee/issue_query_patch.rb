@@ -42,6 +42,7 @@ module TEE
 		    end
 
 		    @available_columns << QueryColumn.new(:total_time, :name => "Tiempo total")
+		    @available_columns << QueryColumn.new(:total_time_last_status, :name => "Tiempo estado actual")
 
 		    disabled_fields = Tracker.disabled_core_fields(trackers).map {|field| field.sub(/_id$/, '')}
 		    @available_columns.reject! {|column|

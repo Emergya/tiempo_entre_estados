@@ -1,0 +1,189 @@
+<%= form_tag({}) do -%>
+<%= hidden_field_tag 'back_url', url_for(params), :id => nil %>
+<div class="autoscroll">
+<table class="list issues <%= sort_css_classes %>">
+  <thead>
+    <tr>
+      <th class="checkbox hide-when-print">
+        <%= link_to image_tag('toggle_check.png'), {},
+                              :onclick => 'toggleIssuesSelection(this); return false;',
+                              :title => "#{l(:button_check_all)}/#{l(:button_uncheck_all)}" %>
+      </th>
+      <% query.inline_columns.each do |column| %>
+        <%= column_header(column) %>
+      <% end %>
+    </tr>
+  </thead>
+  <% previous_group, first = false, true %>
+  <tbody>
+
+
+
+
+	<% issue_list(issues) do |issue, level| -%>
+			
+		<% if @status_ans_id.present? %>	
+			<% start_statuses = issue.get_start_statuses_ans(issue) %>
+			<% pause_statuses = issue.get_pause_statuses_ans(issue) %>
+			<% intervals = issue.get_intervals %>
+
+			<% start_statuses.each do |role, statuses_start| %>
+				<% intervals.each do |interval| %>
+					<% if @status_ans_id.include?(interval[:status_id]) && statuses_start.map{|s| s[:id]}.include?(interval[:status_id]) %>
+						<% time = TeeTimetable.get_total_time(issue.project_id, role, interval[:start], interval[:end]) %>
+						<% if time != 0 %>
+							<% time_hours = Issue.get_hours(time) %>
+							<% if time_hours > 0.0 %>
+								<% if interval[:user_id].present? %>
+							    	<% user_name = User.find(interval[:user_id]) %>
+							    	<% user = user_name.firstname + "-" + user_name.lastname %>
+							    <% else %>
+							    	<% user ="-" %>
+							    <% end %>
+
+								<% if @query.grouped? && ((group = @query.group_by_column.value(issue)) != previous_group || first) %>
+									<% reset_cycle %>
+									<tr class="group open">
+										<td colspan="<%= query.inline_columns.size + 2 %>">
+											<span class="expander" onclick="toggleRowGroup(this);">&nbsp;</span>
+											<%= (group.blank? && group != false) ? l(:label_none) : column_content(@query.group_by_column, issue) %> <span class="count"><%= @issue_count_by_group[group] %></span>
+											<%= link_to_function("#{l(:button_collapse_all)}/#{l(:button_expand_all)}",
+											                     "toggleAllRowGroups(this)", :class => 'toggle-all') %>
+										</td>
+									</tr>
+									<% previous_group, first = group, false %>
+								<% end %>
+
+								<tr id="issue-<%= issue.id %>" class="hascontextmenu <%= cycle('odd', 'even') %> <%= issue.css_classes %> <%= level > 0 ? "idnt idnt-#{level}" : nil %>">
+									<td class="checkbox hide-when-print"><%= check_box_tag("ids[]", issue.id, false, :id => nil) %></td>
+									<%= raw query.inline_columns.map {|column| 
+		                                                                case column.name
+		                                                                when :total_time
+		                                                                      "<td class=\"#{column.css_classes}\">#{Issue.get_total_time(issue.id, @project)} hora(s)</td>"
+		                                                                when :total_time_last_status
+		                                                                      "<td class=\"#{column.css_classes}\">#{Issue.get_total_time_last_status(issue.id, @project)} hora(s)</td>"
+		                                                                when "cf_#{Setting.plugin_tiempo_entre_estados[:tee_status_ans]}".to_sym
+		                                                               		 "<td class=\"#{column.css_classes}\">#{IssueStatus.find(interval[:status_id])[:name]}</td>"
+		                                                                when "cf_#{Setting.plugin_tiempo_entre_estados[:tee_time_ans]}".to_sym
+		                                                               		 "<td class=\"#{column.css_classes}\">#{Issue.get_seconds_to_hh_mm(time)}</td>"
+		                                                               	when "cf_#{Setting.plugin_tiempo_entre_estados[:tee_user_ans]}".to_sym
+	                                                               			 "<td class=\"#{column.css_classes}\">#{user}</td>"                       
+		                                                                else
+		                                                                     "<td class=\"#{column.css_classes}\">#{column_content(column, issue)}</td>"
+		                                                                end
+		                                                  }.join %>
+								</tr>
+
+								<% @query.block_columns.each do |column|
+									if (text = column_content(column, issue)) && text.present? -%>
+										<tr class="<%= current_cycle %>">
+											<td colspan="<%= @query.inline_columns.size + 1 %>" class="<%= column.css_classes %>"><%= text %></td>
+										</tr>
+									<% end -%>
+								<% end -%>
+							<% end %>
+						<% end %>
+					<% end %>
+
+
+				<% end %>
+			<% end %>
+
+
+			<% pause_statuses.each do |role, statuses_pause| %>
+				<% intervals.each do |interval| %>
+
+					<% if @status_ans_id.present? && @status_ans_id.include?(interval[:status_id]) && statuses_pause.map{|s| s[:id]}.include?(interval[:status_id]) %>
+
+							<% if interval[:user_id].present? %>
+						    	<% user_name = User.find(interval[:user_id]) %>
+						    	<% user = user_name.firstname + "-" + user_name.lastname %>
+						    <% else %>
+						    	<% user ="-" %>
+						    <% end %>
+						    
+							<% if @query.grouped? && ((group = @query.group_by_column.value(issue)) != previous_group || first) %>
+
+								<% reset_cycle %>
+								<tr class="group open">
+									<td colspan="<%= query.inline_columns.size + 2 %>">
+										<span class="expander" onclick="toggleRowGroup(this);">&nbsp;</span>
+										<%= (group.blank? && group != false) ? l(:label_none) : column_content(@query.group_by_column, issue) %> <span class="count"><%= @issue_count_by_group[group] %></span>
+										<%= link_to_function("#{l(:button_collapse_all)}/#{l(:button_expand_all)}",
+										                     "toggleAllRowGroups(this)", :class => 'toggle-all') %>
+									</td>
+								</tr>
+								<% previous_group, first = group, false %>
+							<% end %>
+
+
+							<tr id="issue-<%= issue.id %>" class="hascontextmenu <%= cycle('odd', 'even') %> <%= issue.css_classes %> <%= level > 0 ? "idnt idnt-#{level}" : nil %>">
+								<td class="checkbox hide-when-print"><%= check_box_tag("ids[]", issue.id, false, :id => nil) %></td>
+								<%= raw query.inline_columns.map {|column| 
+	                                                                case column.name
+	                                                                when :total_time
+	                                                                     "<td class=\"#{column.css_classes}\">#{Issue.get_total_time(issue.id, @project)} hora(s)</td>"
+	                                                                when :total_time_last_status
+	                                                                     "<td class=\"#{column.css_classes}\">#{Issue.get_total_time_last_status(issue.id, @project)} hora(s)</td>"
+	                                                                when "cf_#{Setting.plugin_tiempo_entre_estados[:tee_status_ans]}".to_sym
+	                                                               		 "<td class=\"#{column.css_classes}\">#{IssueStatus.find(interval[:status_id])[:name]}</td>"
+	                                                                when "cf_#{Setting.plugin_tiempo_entre_estados[:tee_time_ans]}".to_sym
+	                                                               		 "<td class=\"#{column.css_classes}\">0 horas, 0 minutos</td>"
+																	when "cf_#{Setting.plugin_tiempo_entre_estados[:tee_user_ans]}".to_sym
+	                                                               		 "<td class=\"#{column.css_classes}\">#{user}</td>"
+	                                                                else
+	                                                                     "<td class=\"#{column.css_classes}\">#{column_content(column, issue)}</td>"
+	                                                                end
+	                                                  }.join %>
+							</tr>
+
+							<% @query.block_columns.each do |column|
+								if (text = column_content(column, issue)) && text.present? -%>
+									<tr class="<%= current_cycle %>">
+										<td colspan="<%= @query.inline_columns.size + 1 %>" class="<%= column.css_classes %>"><%= text %></td>
+									</tr>
+								<% end -%>
+							<% end -%>
+
+					<% end %>
+
+
+				<% end %>
+			<% end %>
+		<%else %>
+			<% if @query.grouped? && ((group = @query.group_by_column.value(issue)) != previous_group || first) %>
+		    <% reset_cycle %>
+		    <tr class="group open">
+		      <td colspan="<%= query.inline_columns.size + 2 %>">
+		        <span class="expander" onclick="toggleRowGroup(this);">&nbsp;</span>
+		        <%= (group.blank? && group != false) ? l(:label_none) : column_content(@query.group_by_column, issue) %> <span class="count"><%= @issue_count_by_group[group] %></span>
+		        <%= link_to_function("#{l(:button_collapse_all)}/#{l(:button_expand_all)}",
+		                             "toggleAllRowGroups(this)", :class => 'toggle-all') %>
+		      </td>
+		    </tr>
+		    <% previous_group, first = group, false %>
+		  <% end %>
+		  <tr id="issue-<%= issue.id %>" class="hascontextmenu <%= cycle('odd', 'even') %> <%= issue.css_classes %> <%= level > 0 ? "idnt idnt-#{level}" : nil %>">
+		    <td class="checkbox hide-when-print"><%= check_box_tag("ids[]", issue.id, false, :id => nil) %></td>
+		    <%= raw query.inline_columns.map {|column| "<td class=\"#{column.css_classes}\">#{column_content(column, issue)}</td>"}.join %>
+		  </tr>
+		  <% @query.block_columns.each do |column|
+		       if (text = column_content(column, issue)) && text.present? -%>
+		  <tr class="<%= current_cycle %>">
+		    <td colspan="<%= @query.inline_columns.size + 1 %>" class="<%= column.css_classes %>"><%= text %></td>
+		  </tr>
+		  <% end -%>
+		  <% end -%>
+		<% end %>
+
+
+
+	<% end -%>
+
+
+
+
+  </tbody>
+</table>
+</div>
+<% end -%>

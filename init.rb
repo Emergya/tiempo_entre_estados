@@ -26,7 +26,8 @@ Redmine::Plugin.register :tiempo_entre_estados do
     permission :tee_edit_holidays, :tee_holidays => [:index, :create, :edit, :update, :destroy]
     permission :tee_view_time, :issues => [:stats_total_time, :report_ans]
   end
-  
+
+  settings :default => {}, :partial => 'settings/tiempo_entre_estados'
   menu :project_menu, :config_time_statuses, { :controller => 'tee', :action => 'index' }, :caption => 'Control de tiempos', :last => true, :param => :project_id
 
 end

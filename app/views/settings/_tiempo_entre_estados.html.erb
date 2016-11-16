@@ -1,0 +1,22 @@
+<fieldset>
+	<legend><b>Campo personalizados</b></legend>
+
+		<div style='width:250px; float: left;'>Estado ANS:</div> &nbsp;
+		<%= select_tag 'settings[tee_status_ans]',
+			options_from_collection_for_select(CustomField.where("type = ?", 'IssueCustomField'), :id, :name, @settings['tee_status_ans']),
+			:include_blank => true
+		%><br>
+
+		<div style='width:250px; float: left;'>Tiempo en ANS:</div> &nbsp;
+		<%= select_tag 'settings[tee_time_ans]',
+			options_from_collection_for_select(CustomField.where("type = ?", 'IssueCustomField'), :id, :name, @settings['tee_time_ans']),
+			:include_blank => true
+		%><br>
+
+		<div style='width:250px; float: left;'>Usuario en ANS:</div> &nbsp;
+		<%= select_tag 'settings[tee_user_ans]',
+			options_from_collection_for_select(CustomField.where("type = ?", 'IssueCustomField'), :id, :name, @settings['tee_user_ans']),
+			:include_blank => true
+		%>
+
+</fieldset>
