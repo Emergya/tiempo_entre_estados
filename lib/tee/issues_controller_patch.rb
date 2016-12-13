@@ -130,10 +130,6 @@ module TEE
 			@intervals = @issue.get_intervals
 		end
 
-
-
-
-
 		def report_ans
 			retrieve_query
 		    sort_init(@query.sort_criteria.empty? ? [['id', 'desc']] : @query.sort_criteria)
@@ -150,18 +146,13 @@ module TEE
 		    	ans_name = include_ans_value[:values]
 		    	@status_ans_id = ans_name.map{|x| IssueStatus.find_by_name(x).id}
 
-		    	# Filtro - Roles
-		    	# @roles_id_filter = @query.filters["assigned_to_role"][:values]
-		    	# @roles_filter = []
-		    	# @roles_id_filter.each{|role_id| @roles_filter << Role.find(role_id)}
-
 		    	include_ans = true
 		    end
 
 		    @query.sort_criteria = sort_criteria.to_a
 
-		    if params[:set_filter].nil?
-		    	@query.filters = {"status_id"=>{:operator=>"o", :values=>[""]}, "assigned_to_role"=>{:operator=>"=", :values=>["6"]}, "start_date"=>{:operator=>"=", :values=>[Date.today.strftime("%Y-%m-%d")]}, "due_date"=>{:operator=>"=", :values=>[Date.today.strftime("%Y-%m-%d")]}}
+		    if params[:set_filter].nil? && @query.id.nil?
+		    	@query.filters = {"status_id"=>{:operator=>"o", :values=>[""]}, "assigned_to_role"=>{:operator=>"=", :values=>["6"]}, "start_date"=>{:operator=>"=", :values=>[Date.today.strftime("%Y-%m-%d")]}}
 		    end
 
 		    if @query.valid?
@@ -212,15 +203,6 @@ module TEE
 		  rescue ActiveRecord::RecordNotFound
 		    render_404
 		end
-
-
-
-
-
-
-
-
-
 	  end
 
 	  module ClassMethods

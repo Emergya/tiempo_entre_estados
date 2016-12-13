@@ -9,6 +9,7 @@ require 'tee/hooks_view_total_time_issue'
 require 'tee/hooks_view_last_interval_time_issue'
 require 'redmine/export/pdf_patch'
 require 'tee/queries_helper_patch'
+require 'tee/issues_helper_patch'
 
 Redmine::Plugin.register :tiempo_entre_estados do
   name 'Tiempo Entre Estados plugin'
