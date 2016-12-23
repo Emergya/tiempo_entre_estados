@@ -4,6 +4,7 @@ es:
     permission_tee_edit_timetables: Configurar horarios
     permission_tee_edit_holidays: Configurar vacaciones
     permission_tee_view_time: Ver detalle de tiempo total
+    permission_tee_report_ans: Acceder a informe ANS
 
     text_edit: "Editar"
     text_save: "Guardar"

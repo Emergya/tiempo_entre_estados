@@ -87,7 +87,7 @@ module TEE
 				    end
 
 				    # @stats_time << {:role => role_selected.name, :status => IssueStatus.find(interval[:status_id])[:name], :start => interval[:start], :end => interval[:end], :time => 0.0}
-				    @stats_time << {:role => role_selected.name, :status => IssueStatus.find(interval[:status_id])[:name], :user => user, :start => interval[:start], :end => interval[:end], :time => "00 horas, 00 minutos"}
+				    @stats_time << {:role => role_selected.name, :status => IssueStatus.find(interval[:status_id])[:name], :user => user, :start => interval[:start], :end => interval[:end], :time => "0 horas, 0 minutos"}
 	   			end
 				end
 			end
@@ -122,7 +122,8 @@ module TEE
 
 			Role.all.each do |role|
 				role_statuses = role.roles_statuses(@issue.project_id)
-				@pause_statuses[role.id] = role_statuses[:pause]
+				# @pause_statuses[role.id] = role_statuses[:pause]
+				@pause_statuses[role.id] = role_statuses[:close]
 			end	
 		end
 
@@ -131,6 +132,11 @@ module TEE
 		end
 
 		def report_ans
+			if @project.module_enabled?(:tiempo_entre_estados) and !User.current.allowed_to?(:tee_report_ans, @project, :global => true)
+				render_403
+      			return
+			end
+
 			retrieve_query
 		    sort_init(@query.sort_criteria.empty? ? [['id', 'desc']] : @query.sort_criteria)
 		    sort_update(@query.sortable_columns)

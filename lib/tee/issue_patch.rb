@@ -119,7 +119,8 @@ module TEE
 
         Role.all.each do |role|
           role_statuses = role.roles_statuses(issue.project_id)
-          pause_statuses[role.id] = role_statuses[:pause]
+          #pause_statuses[role.id] = role_statuses[:pause]
+          pause_statuses[role.id] = role_statuses[:close]
         end 
 
         return pause_statuses

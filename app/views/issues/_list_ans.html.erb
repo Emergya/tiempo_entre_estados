@@ -1,3 +1,4 @@
+<% if @project.module_enabled?(:tiempo_entre_estados) and User.current.allowed_to?(:tee_report_ans, @project, :global => true) %>
 <%= form_tag({}) do -%>
 <%= hidden_field_tag 'back_url', url_for(params), :id => nil %>
 <div class="autoscroll">
@@ -187,3 +188,4 @@
 </table>
 </div>
 <% end -%>
+<%end>
