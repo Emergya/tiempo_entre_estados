@@ -166,7 +166,16 @@
 		  <% end %>
 		  <tr id="issue-<%= issue.id %>" class="hascontextmenu <%= cycle('odd', 'even') %> <%= issue.css_classes %> <%= level > 0 ? "idnt idnt-#{level}" : nil %>">
 		    <td class="checkbox hide-when-print"><%= check_box_tag("ids[]", issue.id, false, :id => nil) %></td>
-		    <%= raw query.inline_columns.map {|column| "<td class=\"#{column.css_classes}\">#{column_content(column, issue)}</td>"}.join %>
+		    <%= raw query.inline_columns.map {|column| 
+		    									case column.name
+                                                when :total_time
+                                                     "<td class=\"#{column.css_classes}\">#{Issue.get_total_time(issue.id, @project)} hora(s)</td>"
+                                                when :total_time_last_status
+                                                     "<td class=\"#{column.css_classes}\">#{Issue.get_total_time_last_status(issue.id, @project)} hora(s)</td>"
+                                                else
+                                                     "<td class=\"#{column.css_classes}\">#{column_content(column, issue)}</td>"
+                                                end
+		    								}.join %>
 		  </tr>
 		  <% @query.block_columns.each do |column|
 		       if (text = column_content(column, issue)) && text.present? -%>
