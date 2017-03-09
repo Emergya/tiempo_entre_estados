@@ -73,25 +73,6 @@ module TEE
 				end
 			end    
 
-			# Muestra el tiempo de los estados de pausa del perfil (aparecerá 0.0 horas)
-			@pause_statuses.each do |role, statuses_pause|
-				@intervals.each do |interval|
-	   			if statuses_pause.map{|s| s[:id]}.include?(interval[:status_id])
-			   		role_selected = Role.find role
-
-			   		if interval[:user_id].present?
-				    	user_name = User.find(interval[:user_id])
-				    	user = user_name.firstname + "-" + user_name.lastname
-				    else
-				    	user ="-"
-				    end
-
-				    # @stats_time << {:role => role_selected.name, :status => IssueStatus.find(interval[:status_id])[:name], :start => interval[:start], :end => interval[:end], :time => 0.0}
-				    @stats_time << {:role => role_selected.name, :status => IssueStatus.find(interval[:status_id])[:name], :user => user, :start => interval[:start], :end => interval[:end], :time => "0 horas, 0 minutos"}
-	   			end
-				end
-			end
-
 			# Ordenamos el array de hashes para que nos muestre los tiempos de estados ordenados por fecha
 			@stats_time.sort_by!{ |stats| stats[:start] }
 
