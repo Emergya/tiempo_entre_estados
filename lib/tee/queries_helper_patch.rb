@@ -44,6 +44,31 @@ module TEE
 					end
 				end
 			end
+
+			return '0.0'
+		when "cf_#{Setting.plugin_tiempo_entre_estados[:tee_user_ans]}".to_sym
+			start_statuses = issue.get_start_statuses_ans(issue)
+			pause_statuses = issue.get_pause_statuses_ans(issue)
+			intervals = issue.get_intervals
+
+			start_statuses.each do |role, statuses_start|
+				intervals.each do |interval|
+					if @status_ans_id.include?(interval[:status_id]) && statuses_start.map{|s| s[:id]}.include?(interval[:status_id])
+						time = TeeTimetable.get_total_time(issue.project_id, role, interval[:start], interval[:end])
+						if time != 0
+							time_hours = Issue.get_hours(time)
+							if time_hours > 0.0
+								if interval[:user_id].present?
+									user_name = User.find(interval[:user_id])
+									return user_name.firstname + "-" + user_name.lastname
+								end
+							end
+						end
+					end
+				end
+			end
+
+			return '-'
 		else
 		    value = column.value_object(issue)
 		    if value.is_a?(Array)
